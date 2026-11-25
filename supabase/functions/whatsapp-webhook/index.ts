@@ -1,0 +1,6 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const cors={ 'Content-Type':'application/json' };
+Deno.serve(async(req)=>{const url=new URL(req.url);if(req.method==='GET'){const mode=url.searchParams.get('hub.mode');const token=url.searchParams.get('hub.verify_token');const challenge=url.searchParams.get('hub.challenge');return mode==='subscribe'&&token===Deno.env.get('WHATSAPP_VERIFY_TOKEN')?new Response(challenge,{status:200}):new Response('Forbidden',{status:403})}
+if(req.method!=='POST')return new Response('Method not allowed',{status:405});
+const body=await req.json();const message=body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];if(!message)return new Response(JSON.stringify({ok:true}),{headers:cors});
+const supabase=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);const text=message.text?.body??'[non-text message]';const phone=message.from;const {error}=await supabase.from('orders').insert({order_number:`WA-${Date.now()}`,customer_name:body?.entry?.[0]?.changes?.[0]?.value?.contacts?.[0]?.profile?.name??'WhatsApp customer',phone,special_notes:text,order_type:'takeout',payment_method:'cash',status:'draft',source:'whatsapp'});if(error)console.error(error);return new Response(JSON.stringify({ok:!error}),{status:error?500:200,headers:cors})});

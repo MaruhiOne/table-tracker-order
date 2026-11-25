@@ -1,0 +1,7 @@
+VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY
+# Edge Function secrets (set with `supabase secrets set`, never VITE_ variables)
+# WHATSAPP_VERIFY_TOKEN=
+# WHATSAPP_ACCESS_TOKEN=
+# WHATSAPP_PHONE_NUMBER_ID=
+# WHATSAPP_APP_SECRET=
